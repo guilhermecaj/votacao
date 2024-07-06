@@ -7,6 +7,7 @@ No cooperativismo, cada associado possui um voto e as decisões são tomadas em 
 
 - Java 17 [Java JDK 17](https://www.oracle.com/java/technologies/downloads/?er=221886#java17)
 - Maven [Maven 3.8.1+](https://maven.apache.org/install.html)
+- Docker Desktop [Docker Desktop](https://docs.docker.com/desktop/)
 
 ## Instalando
 
@@ -41,3 +42,12 @@ Para acessar a documentação da API gerada pelo Swagger, siga estas estapas:
 1. Certifique-se que a aplicação esteja sendo executada
 2. Acesse a página do [Swagger](http://localhost:8080/swagger-ui/index.html) na aplicação
 
+## Publicação da API
+Para consrtruir a imagem do projeto no Docker para publicação, execute o comando no terminal integrado
+```
+docker build -t votacao .
+``` 
+Para rodar a imagem gerada, execute o comando no terminal integrado
+```
+docker run -p 8080:8080 votacao
+```
