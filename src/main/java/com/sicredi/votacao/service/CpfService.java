@@ -4,6 +4,7 @@ import com.sicredi.votacao.dto.CpfResponseDTO;
 
 import java.util.Arrays;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.client.HttpClientErrorException;
@@ -11,11 +12,14 @@ import org.springframework.web.client.HttpClientErrorException;
 @Service
 public class CpfService {
 
-    private static final String[] CPFS_LIBERADOS = {
+     private static final String[] CPFS_LIBERADOS = {
         "12345678901", "09876543210", "11223344556", "66778899000"
     };
 
     private final RestTemplate restTemplate = new RestTemplate();    
+
+    @Value("${cpf.service.url}")
+    private String cpfServiceUrl;
 
     public boolean isAbleToVote(String cpf) {
 
@@ -24,7 +28,7 @@ public class CpfService {
             return true;
         }       
         
-        String url = "https://user-info.herokuapp.com/users/" + cpf;
+        String url = cpfServiceUrl + cpf;      
 
         try {
             CpfResponseDTO response = restTemplate.getForObject(url, CpfResponseDTO.class);

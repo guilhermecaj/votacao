@@ -23,7 +23,7 @@ Para instalar o projeto, siga estas etapas:
 
 Para executar o projeto, siga estas etapas:
 
-    No terminal integrado, execute o comando Maven para compilar e rodar a aplicação:
+1. No terminal integrado, execute o comando Maven para compilar e rodar a aplicação   
     ```sh
     mvn spring-boot:run
     ```
@@ -31,7 +31,7 @@ Para executar o projeto, siga estas etapas:
 ## Executando os testes
 Para executar os testes do projeto, siga estas etapas:
 
-    No terminal integrado, execute o comando Maven para compilar e rodar a aplicação:
+1. No terminal integrado, execute o comando Maven para executar os testes da aplicação
     ```sh
     mvn test
     ```
@@ -39,4 +39,5 @@ Para executar os testes do projeto, siga estas etapas:
 Para acessar a documentação da API gerada pelo Swagger, siga estas estapas:
 
 1. Certifique-se que a aplicação esteja sendo executada
-2. Acesse a página do [Swagger] (http://localhost:8080/swagger-ui/index.html)
+2. Acesse a página do [Swagger](http://localhost:8080/swagger-ui/index.html) na aplicação
+
