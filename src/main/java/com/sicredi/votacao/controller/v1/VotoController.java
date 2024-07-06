@@ -6,7 +6,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import com.sicredi.votacao.exception.BadRequestException;
-
+import com.sicredi.votacao.exception.CpfNaoAutorizadoException;
 import com.sicredi.votacao.exception.ResourceNotFoundException;
 import com.sicredi.votacao.exception.SessaoVotacaoFechadaException;
 import com.sicredi.votacao.exception.VotoDuplicadoException;
@@ -15,6 +15,7 @@ import com.sicredi.votacao.model.SessaoVotacao;
 import com.sicredi.votacao.model.Voto;
 import com.sicredi.votacao.repository.SessaoVotacaoRepository;
 import com.sicredi.votacao.repository.VotoRepository;
+import com.sicredi.votacao.service.CpfService;
 
 import java.util.List;
 import java.util.UUID;
@@ -28,6 +29,9 @@ public class VotoController {
 
     @Autowired
     private SessaoVotacaoRepository sessaoVotacaoRepository;   
+    
+    @Autowired
+    private CpfService cpfService;
 
     @GetMapping   
     public List<Voto> getAllVotos() {
@@ -71,6 +75,12 @@ public class VotoController {
         if (!sessaoVotacao.isSessaoAberta()) {
             throw new SessaoVotacaoFechadaException("A sessão de votação não está aberta.");
         }
+
+        // Verifica pelo CPF do associado se ele pode votar para votar
+        if (!cpfService.isAbleToVote(voto.getCpf())) {
+            throw new CpfNaoAutorizadoException("O associado não está autorizado a votar.");
+        }
+
         // Verifica se o associado já votou em qualquer sessão de votação da pauta
         boolean jaVotou = votoRepository.existsByAssociadoIdAndPautaId(voto.getAssociadoId(),
                 sessaoVotacao.getPauta().getId());

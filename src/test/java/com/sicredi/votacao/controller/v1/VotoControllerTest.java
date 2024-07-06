@@ -2,6 +2,7 @@ package com.sicredi.votacao.controller.v1;
 
 import static org.hamcrest.Matchers.*;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
@@ -20,8 +21,10 @@ import com.sicredi.votacao.model.Voto;
 import com.sicredi.votacao.model.enums.VotoEnum;
 import com.sicredi.votacao.repository.SessaoVotacaoRepository;
 import com.sicredi.votacao.repository.VotoRepository;
+import com.sicredi.votacao.service.CpfService;
 
 import org.junit.jupiter.api.Test;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -42,6 +45,9 @@ public class VotoControllerTest {
 
     @MockBean
     private SessaoVotacaoRepository sessaoVotacaoRepository;
+
+    @MockBean
+    private CpfService cpfService;
 
     @Autowired
     private ObjectMapper objectMapper;
@@ -96,7 +102,7 @@ public class VotoControllerTest {
     }
 
     @Test
-    public void testCreateVoto() throws Exception {
+    public void testCreateVotoCpfAutorizado() throws Exception {
         UUID sessaoId = UUID.randomUUID();
         SessaoVotacao sessao = new SessaoVotacao();
         sessao.setId(sessaoId);
@@ -106,7 +112,7 @@ public class VotoControllerTest {
         Pauta pauta = new Pauta();
         pauta.setId(UUID.randomUUID());
         pauta.setDescricao("Pauta Teste");
-        
+
         // Associar a Pauta à SessaoVotacao
         sessao.setPauta(pauta);
 
@@ -123,15 +129,52 @@ public class VotoControllerTest {
 
         when(votoRepository.save(any(Voto.class))).thenReturn(voto);
         when(votoRepository.existsByAssociadoIdAndPautaId(any(String.class), any(UUID.class))).thenReturn(false);
+        when(cpfService.isAbleToVote(anyString())).thenReturn(true);
 
         mockMvc.perform(post("/api/v1/votos")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(voto)))
-            .andExpect(status().isOk())
-            .andExpect(jsonPath("$.voto", is(voto.getVoto().toString())));
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.voto").value(voto.getVoto().toString()));
 
         verify(votoRepository, times(1)).save(any(Voto.class));
     }
+
+    @Test
+    public void testCreateVotoCpfNaoAutorizado() throws Exception {
+        UUID sessaoId = UUID.randomUUID();
+        SessaoVotacao sessao = new SessaoVotacao();
+        sessao.setId(sessaoId);
+        sessao.setDataAbertura(LocalDateTime.now().minusMinutes(30));
+        sessao.setDuracao(60);
+
+        Pauta pauta = new Pauta();
+        pauta.setId(UUID.randomUUID());
+        pauta.setDescricao("Pauta Teste");
+
+        // Associar a Pauta à SessaoVotacao
+        sessao.setPauta(pauta);
+
+        when(sessaoVotacaoRepository.findById(sessaoId)).thenReturn(Optional.of(sessao));
+        when(sessaoVotacaoRepository.existsById(sessaoId)).thenReturn(true);
+
+        Voto voto = new Voto();
+        voto.setId(UUID.randomUUID());
+        voto.setVoto(VotoEnum.SIM);
+        voto.setAssociadoId("associado1");
+        voto.setCpf("09876543210");
+        voto.setData(LocalDateTime.now());
+        voto.setSessaoVotacao(sessao);
+
+        when(cpfService.isAbleToVote(anyString())).thenReturn(false);
+
+        mockMvc.perform(post("/api/v1/votos")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(voto)))
+                .andExpect(status().isBadRequest());                
+
+        verify(votoRepository, never()).save(any(Voto.class));
+    }   
     
 }
 
