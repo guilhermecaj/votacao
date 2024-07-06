@@ -8,4 +8,30 @@ No cooperativismo, cada associado possui um voto e as decisões são tomadas em 
 - Java 17 [Java JDK 17](https://www.oracle.com/java/technologies/downloads/?er=221886#java17)
 - Maven [Maven 3.8.1+](https://maven.apache.org/install.html)
 
+## Instalando
 
+Para instalar o projeto, siga estas etapas:
+
+1. Baixe o projeto para o seu computador
+2. Abra o projeto na IDE de sua preferência
+3. Abra o terminal integrado no diretório raiz do projeto e instale as dependências 
+    ```sh
+    mvn clean install
+    ```
+
+## Executando a aplicação
+
+Para executar o projeto, siga estas etapas:
+
+    No terminal integrado, execute o comando Maven para compilar e rodar a aplicação:
+    ```sh
+    mvn spring-boot:run
+    ```
+
+## Executando os testes
+Para executar os testes do projeto, siga estas etapas:
+
+    No terminal integrado, execute o comando Maven para compilar e rodar a aplicação:
+    ```sh
+    mvn test
+    ```
