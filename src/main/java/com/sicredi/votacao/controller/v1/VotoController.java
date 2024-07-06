@@ -17,11 +17,15 @@ import com.sicredi.votacao.repository.SessaoVotacaoRepository;
 import com.sicredi.votacao.repository.VotoRepository;
 import com.sicredi.votacao.service.CpfService;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
+
 import java.util.List;
 import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/v1/votos")
+@Tag(name = "Votos", description = "API para gerenciamento de votos em pautas de uma assembléia")
 public class VotoController {
 
     @Autowired
@@ -33,19 +37,22 @@ public class VotoController {
     @Autowired
     private CpfService cpfService;
 
-    @GetMapping   
+    @GetMapping
+    @Operation(summary = "Listar todos os votos ", description = "Retorna uma lista de todos os votos em pautas de assembléias")
     public List<Voto> getAllVotos() {
         return votoRepository.findAll();
     }
 
-    @GetMapping("/{id}")    
+    @GetMapping("/{id}")
+    @Operation(summary = "Obter um voto pelo ID", description = "Retorna um voto específico com base no ID fornecido")
     public ResponseEntity<Voto> getVotoById(@PathVariable UUID id) {
         return votoRepository.findById(id)
                 .map(voto -> ResponseEntity.ok().body(voto))
                 .orElse(ResponseEntity.notFound().build());
     }
 
-    @PostMapping    
+    @PostMapping
+    @Operation(summary = "Criar um novo voto", description = "Cria um novo voto com as informações fornecidas")    
     public Voto createVoto(@RequestBody Voto voto) {
 
         if(voto.getAssociadoId() == null){

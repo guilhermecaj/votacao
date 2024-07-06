@@ -20,26 +20,33 @@ import com.sicredi.votacao.model.Pauta;
 import com.sicredi.votacao.model.SessaoVotacao;
 import com.sicredi.votacao.repository.PautaRepository;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
+
 @RestController
 @RequestMapping("/api/v1/pautas")
+@Tag(name = "Pauta", description = "API para gerenciamento de pautas de assembléias")
 public class PautaController {
 
     @Autowired
     private PautaRepository pautaRepository;    
   
-    @GetMapping    
+    @GetMapping
+    @Operation(summary = "Listar todas as pautas", description = "Retorna uma lista de todas as pautas da assembléia")   
     public List<Pauta> getAllPautas() {
         return pautaRepository.findAll();
     }
 
-    @GetMapping("/{id}/sessoesvotacao")    
+    @GetMapping("/{id}/sessoesvotacao")
+    @Operation(summary = "Consultar sessões de votação de uma pauta", description = "Retorna todas as sessões de votação associadas a uma pauta específica com base no ID fornecido")
     public ResponseEntity<List<SessaoVotacao>> getSessoesByPautaId(@PathVariable UUID id) {
         Pauta pauta = pautaRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Pauta não encontrada com o id " + id));
         return ResponseEntity.ok(pauta.getSessoesVotacao());
     }
 
-    @GetMapping("/{id}")    
+    @GetMapping("/{id}")
+    @Operation(summary = "Obter uma pauta pelo ID", description = "Retorna uma pauta específica com base no ID fornecido")  
     public ResponseEntity<Pauta> getPautaById(@PathVariable UUID  id) {
         return pautaRepository.findById(id)
                 .map(pauta -> ResponseEntity.ok().body(pauta))        
@@ -47,12 +54,14 @@ public class PautaController {
     }
 
   
-    @PostMapping    
+    @PostMapping
+    @Operation(summary = "Criar uma nova pauta", description = "Cria uma nova pauta com a descrição fornecida") 
     public Pauta createPauta(@RequestBody Pauta pauta) {
         return pautaRepository.save(pauta);
     }
 
-    @PutMapping("/{id}")    
+    @PutMapping("/{id}")
+    @Operation(summary = "Atualizar a descrição de uma pauta", description = "Atualiza a descrição de uma pauta específica com base no ID fornecido")
     public Pauta updatePauta(@PathVariable UUID id, @RequestBody Pauta novosValoresPauta) {
         Pauta pauta = pautaRepository.findById(id)
                                     .orElseThrow(() -> new ResourceNotFoundException("Pauta não encontrada com o id  " + id));
@@ -62,7 +71,8 @@ public class PautaController {
         return pautaRepository.save(pauta);
     }
 
-    @DeleteMapping("/{id}")   
+    @DeleteMapping("/{id}")
+    @Operation(summary = "Excluir uma pauta", description = "Exclui uma pauta específica com base no ID fornecido") 
     public void deletePauta(@PathVariable UUID id) {
         Pauta pauta = pautaRepository.findById(id)
         .orElseThrow(() -> new ResourceNotFoundException("Pauta não encontrada com o id " + id));

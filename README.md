@@ -35,3 +35,8 @@ Para executar os testes do projeto, siga estas etapas:
     ```sh
     mvn test
     ```
+## Documentação da API
+Para acessar a documentação da API gerada pelo Swagger, siga estas estapas:
+
+1. Certifique-se que a aplicação esteja sendo executada
+2. Acesse a página do [Swagger] (http://localhost:8080/swagger-ui/index.html)
